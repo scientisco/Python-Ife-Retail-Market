@@ -1,5 +1,8 @@
+
+
+
 #============PYTHON IFE RETAIL MARKET PROJECT BY ADEYINKA ANEES ADEDAYO=======================
-#NOTE: Password to login as Admin is within the code
+#NOTE: Password to login as Admin is within the code  = LINE 398
 
 
 
@@ -103,69 +106,83 @@ def PurchaseGoods():
     validQtyNo = False
     validItems = False
     QtyAvail = False
+    valid = False
     while validNo ==False:
         try:
             NoOfItems = int(input('\nHow many type of items do you want to buy? '))
             validNo = True
         except ValueError:
              print('Invalid Number!!!')
-             
-    for i in range(NoOfItems):
+    
         
-        while validItems ==False:
-            try:
-                goods = str(input('\nWhat item do you want: '))
-                print('Price of', goods,'is: #', Price[items.index(goods)])
-                print('Available Qty of',goods,'is:', AvailableQty[items.index(goods)])
-                validItems = True
-            except ValueError:
-                print('Item not available!!!')
-                
-                
-        while validQtyNo ==False:
-            try:
-                Qty = int(input('How many of the item do you want to buy? '))
-                validQtyNo = True
-            except ValueError:
-                print('Invalid Number!!!')
-        validItems = False  #To start question: "What item do you want" for next item)
-            
+    for i in range(NoOfItems):
+        while valid == False:
+            while validItems ==False:
+                try:
+                    goods = str(input('\nWhat item do you want: '))
+                    print('Price of', goods,'is: #', Price[items.index(goods)])
+                    print('Available Qty of',goods,'is:', AvailableQty[items.index(goods)])
+                    validItems = True
+                except ValueError:
+                    print('Item not available!!!')
+                    
+                    
+            while validQtyNo ==False:
+                try:
+                    Qty = int(input('How many of the item do you want to buy? '))
+                    validQtyNo = True
+                except ValueError:
+                    print('Invalid Number!!!')
 
-        if (goods in items):   
+            validItems = False  #To start question: "What item do you want" for next item)
+                
             
-            if Qty >0 :
+            if (goods in items)and (goods not in Cart):   
+                
+                if Qty >0 :
 
-                if AvailableQty[items.index(goods)] >= Qty:
-                    QtyAvail = True
-                    priceOfItem = Price[items.index(goods)]*Qty
-                    AvailableQty[items.index(goods)] -= Qty
-                    print(Qty,'Qty of', goods,'is: #', priceOfItem)
-                    Cart.append(goods)
-                    Cost.append(priceOfItem)
-                    Quantity.append(Qty)
-                    print('Available Qty Remaining: ', AvailableQty[items.index(goods)])
-                    total_price += priceOfItem
-                elif AvailableQty[items.index(goods)] == 0:
-                    print(goods,'Is out of stock')
+                    if AvailableQty[items.index(goods)] >= Qty:
+                        QtyAvail = True
+                        priceOfItem = Price[items.index(goods)]*Qty
+                        AvailableQty[items.index(goods)] -= Qty
+                        print(Qty,'Qty of', goods,'is: #', priceOfItem)
+                        Cart.append(goods)
+                        Cost.append(priceOfItem)
+                        Quantity.append(Qty)
+                        print('Available Qty Remaining: ', AvailableQty[items.index(goods)])
+                        total_price += priceOfItem
+                        valid = True
+                    elif AvailableQty[items.index(goods)] == 0:
+                        print(goods,'Is out of stock!!!')
+                    else:
+                        print('\nThe quantity of',goods,'you ordered is not available!!\n')
+                        print('Available Qty Remaining: ', AvailableQty[items.index(goods)])
+                       
                 else:
-                    print('\nThe quantity of',goods,'you ordered is not available\n')
-                    print('Available Qty Remaining: ', AvailableQty[items.index(goods)])
-                   
+                    print('Invalid Qty')
+            elif (goods in Cart) :
+                print('Item already added, Choose another Item!!!')
+                validQtyNo = False
+                validItems = False
+                valid = False
+                continue
             else:
-                print('Invalid Qty')
-        else:
-            print('Item is not available')
-            validQtyNo = False
-            continue
-
-                        
-        validQtyNo = False   #To ask for a valid Qty of the next item
+                print('Item is not available!!!')
+                validQtyNo = False
+                validItems = False
+                valid = False
+                continue
             
+            validQtyNo = False   #=====To ask for a valid Qty of the next item
+        valid = False   #=======To keep looping till a valid Item is entered
+
+        
     if len(Cart) < 5:
         VAT = total_price*0.2  #20% VAT for items less than 5
     elif len(Cart) > 10:
         VAT = total_price*0.3  #30% VAT for items greater than 10
-    if len(Cart) >= 10 and min(Cost)>= 100:
+    if len(Cart) > 10 and min(Cost)>= 100:
+        
         bonus = 800            #bonus goods for items greater than 10 and minimum price is #100
     else:
         bonus = 0
@@ -194,8 +211,8 @@ def PurchaseGoods():
         print('Total:',' '*50,'#',total_price, sep='')
         print('\nVAT : #',VAT, sep='')
         print('Discount: ', discount, '%', sep='')
-        print('Bonus Goods: -#', bonus, sep='')
-        payment = total_price + VAT - bonus
+        print('Bonus Goods: #', bonus, sep='')
+        payment = total_price + VAT
         print('Total payment is: #',  payment, sep='')
         total_gain.append(payment)
         print('\nThanks for shopping with us, See you next time')
@@ -206,7 +223,7 @@ def PurchaseGoods():
     actions = False
     print(' '*25, 'YOU GOODS ARE :\n')
     print('S/N',' '*5, 'Item', ' '*30, ' Quantity',' '*8,' Price(#)')
-    print('='*70)
+    print('='*75)
     for i in range(len(Cart)):
         if i <9 and Quantity[i]< 10:
             print(i+1,' '*5, Cart[i], ' '*(30-len(Cart[i])), ' '*10, Quantity[i],' '*12,"#", Cost[i])
@@ -222,12 +239,11 @@ def PurchaseGoods():
     print('Total:',' '*60,'# ',total_price, sep='')
     print('\nVAT : #',VAT, sep='')
     print('Discount: ', discount, '%', sep='')
-    print('Bonus Goods: -#', bonus, sep='')
-    payment = total_price + VAT - bonus
+    print('Bonus Goods: #', bonus, sep='')
+    payment = total_price + VAT 
     print('Total payment is: #',  payment, sep='')
     ans = str(input('\nDo You Want To Continue Purchase? :\n1. Yes\n2. No\nEnter: '))
     while actions == False:
-        
         if ans == '1':
             print(' '*22,'Transaction Successful!!!')
             actions = True
@@ -430,4 +446,8 @@ intro()
 #IG: scientisco
 #FB: scientisco
 #Phone: 08083400714
+
+
+
+
 
